@@ -1,0 +1,173 @@
+#!/usr/bin/env perl6
+
+use CPAN::Tar;
+use CPAN::Pack6;
+use JSON::Fast;
+use Compress::Zlib;
+use Getopt::Advance;
+use File::Directory::Tree;
+use Getopt::Advance::Utils;
+
+my OptionSet $os .= new;
+
+our &*pack6-hook = sub (Str:D $path) { };
+
+&set-autohv('h', 'v');
+$os.insert-pos( "module", :last, sub ($os, $dir) {
+    my ($ver, $debug) = ($os<ver> // "", $os<d>);
+    my ($inp, $outp)  = ($dir.Str.IO   , ($os<out> // "").IO);
+
+    die "Not a valid directory: $inp"  if $inp !~~ :d;
+    die "Not a valid directory: $outp" if $outp !~~ :d;
+    note ">> Get module directory: [{$inp.absolute}]" if $debug;
+
+    my $meta = $inp.add("META6.json");
+
+    die "Can not found the META6.json in {$inp.absolute}!" if $meta !~~ :f;
+    note ">> Found META6.json" if $debug;
+
+    my %meta = from-json $meta.slurp;
+
+    if %meta<name>:!exists || ((%meta<version>:!exists) && $ver eq "") {
+        die "What's your module name or version ?";
+    }
+
+    my ($name, $version) = (%meta<name>, %meta<version>);
+
+    note ">> Get module name: [$name]" if $debug;
+    note ">> Get module version: [$version]" if $debug;
+
+    my $packname = $name.subst("::", "-") ~ "-{$version}";
+
+    $outp.add($packname).mkdir;
+    note ">> Create pack directory {$packname}" if $debug;
+
+    my @exclude = < .precomp .git >;
+
+    @exclude.append(($os<ex> // []));
+    CPAN::Pack6::copy-module-to($inp.absolute, $outp.add($packname).absolute, &make-exclude-func(@exclude.sort.unique));
+    note ">> Move the file to pack directory" if $debug;
+
+    # after module copied, run custom hook
+    # you may create a module like CPAN::Convert, hook the &*pack6-hook
+    my @pps = $os<pp> // [];
+    if $os<md> {
+        note ">> Require hook module CPAN::Convert" if $debug;
+        require ::("CPAN::Convert");
+    }
+    for @pps -> $pp {
+        note ">> Require hook module $pp" if $debug;
+        require ::($pp);
+    }
+    &*pack6-hook($outp.add($packname).Str);
+
+    my $gzip = zwrap(open("{$packname}.tar.gz", :w), :gzip);
+
+    create-special-tar("{$packname}.tar", $outp.add($packname).absolute, $gzip);
+    $gzip.close();
+    note ">> Create tar package" if $debug;
+
+    LEAVE {
+        rmtree $outp.add($packname).path;
+        note ">> Remove pack directory {$packname}" if $debug;
+    }
+    True;
+});
+
+&getopt( :autohv, &load-from-json($os, $=pod.pop.contents),
+        version => Q:to/VERSION/,
+    pack6 0.1.
+    Make cpan package according the module information file META6.json.
+    Create by github:araraloren.
+    VERSION
+);
+
+sub load-from-json($os, $json) {
+    my @json := (from-json $json)<option>;
+    for @json -> $info {
+        my $optstr = "{$info<short>}|={$info<type>}";
+        my $annotation = $info<annotation>;
+        $os.push(my $opt = $os.create( $optstr, :$annotation));
+        if $info<value>:exists {
+            $opt.set-default-value($info<value>);
+            $opt.reset-value;
+        }
+    }
+    $os;
+}
+
+
+sub create-special-tar(Str:D $name, Str:D $directory, $out) {
+    my (@stack, @files);
+    my ($basename, $old) = ($directory.IO.basename, $*CWD);
+
+    # set the CWD to src directory, so we can get clean path of file/dir
+    chdir($directory);
+    @stack.push: ".".IO;
+    while +@stack > 0 {
+        for @stack.pop.dir() -> $f {
+            @stack.push($f) if $f.d;
+            @files.push([ $f.absolute, "$basename/{$f.Str}" ]) if $f.f;
+        }
+    }
+    chdir($old);
+
+    my $tar = CPAN::Tar.new(out => $out);
+    $tar.add(.[0], .[1]) for @files;
+    $tar.pack();
+}
+
+sub make-exclude-func(@names) {
+    return sub ($name) {
+        so $name eq @names.any;
+    };
+}
+
+=head2 Support options
+=begin code
+{
+    "option": [
+        {
+            "short": "ver",
+            "type" : "s",
+            "annotation": "Using ver instead of version info in META6.json"
+        },
+        {
+            "short": "out",
+            "type" : "s",
+            "value": ".",
+            "annotation": "Set the pack output directory"
+        },
+        {
+            "short": "md",
+            "type" : "b",
+            "annotation": "Require module CPAN::Convert wrap the &*pack6-hook, convert all the asciidoc to markdown"
+        },
+        {
+            "short": "pp",
+            "type":  "a",
+            "annotation": "Pack6 will call &*pack6-hook on output directory, in default do nothing"
+        },
+        {
+            "short": "ex",
+            "type":  "a",
+            "annotation": "Exclude file from module source, in default are .precomp and .git"
+        },
+        {
+            "short": "h",
+            "type" : "b",
+            "annotation": "Print the help message"
+        },
+        {
+            "short": "v",
+            "type" : "b",
+            "annotation": "Print the version information"
+        },
+        {
+            "short": "d",
+            "type" : "b",
+            "annotation": "Print debug message"
+        }
+    ]
+}
+=end code

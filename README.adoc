@@ -1,0 +1,67 @@
+
+= perl6-pack6
+:toc-title: contents
+:description: A tools can easily create CPAN tarball for you!
+:Email: blackcatoverwall@gmail.com
+:Revision: 1.0
+:icons: font
+:source-highlighter: pygments
+:source-language: perl6
+:pygments-linenums-mode: table
+:toc: left
+:lang: en
+
+A tools can easily create CPAN tarball for you!
+
+= Usage:
+  pack6 [module@*] [OPTIONs]
+
+== Example
+
+    pack6 . -md -ex .idea -ex perl6-pack6.iml
+
+This command will create a tarball for pack6.
+
+== Options
+  * -d
+
+  Print debug message
+
+  * -ex=<array>
+
+  Exclude file from module source, in default are .precomp and .git.
+
+  * -h
+
+  Print the help message.
+
+  * -md
+
+  Require module CPAN::Convert wrap the &*pack6-hook, convert all the asciidoc to markdown.
+
+  * -out=<string>
+
+  Set the pack output directory, in default is current directory.
+
+  * -pp=<array>
+
+  User can create a module like CPAN::Convert hook the &*pack6-hook.
+  Pack6 will call &*pack6-hook on output directory, in default do nothing.
+
+  * -v
+
+  Print the version information.
+
+  * -ver=<string>
+
+  Using ver instead of version info in META6.json.
+
+= Installation
+
+* install with zef
+
+    zef install pack6
+
+= Lincese
+
+The MIT License (MIT).
