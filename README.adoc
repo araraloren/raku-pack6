@@ -1,7 +1,7 @@
 
 = perl6-pack6
 :toc-title: contents
-:description: A tools can easily create CPAN tarball for you!
+:description: An tools can easily create CPAN tarball for you!
 :Email: blackcatoverwall@gmail.com
 :Revision: 1.0
 :icons: font
@@ -11,7 +11,7 @@
 :toc: left
 :lang: en
 
-A tools can easily create CPAN tarball for you!
+An tools can easily create CPAN tarball for you!
 
 = Usage:
   pack6 [module@*] [OPTIONs]

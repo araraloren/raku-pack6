@@ -7,7 +7,7 @@
         "File::Directory::Tree",
         "File::Which"
     ],
-    "description": "A tools can easily create CPAN tarball for you!",
+    "description": "An tools can easily create CPAN tarball for you!",
     "resources": [],
     "version": "0.1",
     "license": "MIT",
