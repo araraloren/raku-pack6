@@ -23,36 +23,36 @@ An tools can easily create CPAN tarball for you!
 This command will create a tarball for pack6.
 
 == Options
-  * -d
+  * `-d`
 
   Print debug message
 
-  * -ex=<array>
+  * `-ex=<array>`
 
   Exclude file from module source, in default are .precomp and .git.
 
-  * -h
+  * `-h`
 
   Print the help message.
 
-  * -md
+  * `-md`
 
   Require module CPAN::Convert wrap the &*pack6-hook, convert all the asciidoc to markdown.
 
-  * -out=<string>
+  * `-out=<string>`
 
   Set the pack output directory, in default is current directory.
 
-  * -pp=<array>
+  * `-pp=<array>`
 
   User can create a module like CPAN::Convert hook the &*pack6-hook.
   Pack6 will call &*pack6-hook on output directory, in default do nothing.
 
-  * -v
+  * `-v`
 
   Print the version information.
 
-  * -ver=<string>
+  * `-ver=<string>`
 
   Using ver instead of version info in META6.json.
 
