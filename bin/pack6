@@ -37,7 +37,7 @@ $os.insert-pos( "module", :last, sub ($os, $dir) {
     note ">> Get module name: [$name]" if $debug;
     note ">> Get module version: [$version]" if $debug;
 
-    my $packname = $name.subst("::", "-") ~ "-{$version}";
+    my $packname = $name.subst("::", "-", :g) ~ "-{$version}";
 
     $outp.add($packname).mkdir;
     note ">> Create pack directory {$packname}" if $debug;
