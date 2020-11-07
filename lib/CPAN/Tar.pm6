@@ -55,7 +55,9 @@ method !end-record($size is copy) {
         $count++;
         $size++;
     }
-    $!out.write(buf8.new: 0 xx $count);
+    if $count > 0 {
+        $!out.write(buf8.new: 0 xx $count);
+    }
 }
 
 method add(Str:D $path, Str:D $name) {

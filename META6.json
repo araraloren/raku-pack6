@@ -9,7 +9,7 @@
     ],
     "description": "An tools can easily create CPAN tarball for you!",
     "resources": [],
-    "version": "0.2",
+    "version": "0.3",
     "license": "MIT",
     "source-url": "https://github.com/araraloren/perl6-pack6",
     "provides": {
