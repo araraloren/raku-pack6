@@ -1,12 +1,12 @@
 
-= perl6-pack6
+= raku-pack6
 :toc-title: contents
 :description: An tools can easily create CPAN tarball for you!
 :Email: blackcatoverwall@gmail.com
 :Revision: 1.0
 :icons: font
 :source-highlighter: pygments
-:source-language: perl6
+:source-language: raku
 :pygments-linenums-mode: table
 :toc: left
 :lang: en
@@ -18,7 +18,7 @@ An tools can easily create CPAN tarball for you!
 
 == Example
 
-    pack6 . -md -ex .idea -ex perl6-pack6.iml
+    pack6 . -md -ex .idea -ex raku-pack6.iml
 
 This command will create a tarball for pack6.
 
