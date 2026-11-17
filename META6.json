@@ -2,7 +2,7 @@
     "auth": "github:araraloren",
     "depends": [
         "JSON::Fast",
-        "Compress::Zlib",
+        "Compress::Zlib:ver<2.0.0+>:auth<zef:apogee>",
         "Getopt::Advance",
         "File::Directory::Tree",
         "File::Which"
